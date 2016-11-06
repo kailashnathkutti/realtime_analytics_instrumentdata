@@ -20,7 +20,8 @@ import org.kie.server.client.RuleServicesClient
 import com.kiin.ui.ruleprocessor.ConfigUtil;
 import com.kiin.ui.ruleprocessor.FileContent;
 
-split = payload.tokenize("\t");
+String returVal = "";
+split = payload.toString().tokenize("\t");
 FileContent fileContent = new FileContent();
 String url = ConfigUtil.getPropertyByName("SRVR_URL");
 String username = ConfigUtil.getPropertyByName("USERNAME");
@@ -30,10 +31,10 @@ String container = ConfigUtil.getPropertyByName("CONTAINER");
 	fileContent.setSite_producer_name(split[0]);
 	fileContent.setSite_sender_name(split[1]);
 	fileContent.setOrder_number(split[2]);
-	fileContent.setOrderer_code(split[3]);
+	fileContent.setOrderer_code(split[5]);
 	fileContent.setOrderer_group(split[4]);
-	fileContent.setSample_is_urgent(split[5]);
-	fileContent.setEvent_datetime(split[26]);
+	fileContent.setSample_is_urgent(split[3]);
+	fileContent.setEvent_datetime(split[23]);
 	fileContent.setOrderer_functional_unit("");
 	fileContent.setSample_id("");
 	fileContent.setSample_subtype("");
@@ -77,7 +78,7 @@ String container = ConfigUtil.getPropertyByName("CONTAINER");
 	fileContent.setFile_name("");
 
 	
-	KieServicesConfiguration config = KieServicesFactory.newRestConfiguration(url, username, password);
+	KieServicesConfiguration config = KieServicesFactory.newRestConfiguration("http://10.136.108.145:8080/kie-server/services/rest/server", "kuttikappuser", "password");
 	//Set<Class<?>> allClasses = new HashSet<Class<?>>();
 	//allClasses.add(UploadedFile.class);
 	//config.addJaxbClasses(allClasses);
@@ -105,6 +106,8 @@ String container = ConfigUtil.getPropertyByName("CONTAINER");
 	
 	String textFrom = "<result identifier=\"InputData\">";
 	String textTo = "</result>";
+	if (output.length() > 1 )
+	{
 	String result =
 			output.substring(
 					output.indexOf(textFrom) + textFrom.length(),
@@ -128,9 +131,12 @@ String container = ConfigUtil.getPropertyByName("CONTAINER");
 		
 		System.out.println(fileOut.isDq1_passed() );
 		fileContent = null;
+		returVal = "DQ1 status is "+ fileOut.isDq1_passed().toString()+" and the site sender is "+fileOut.getSite_producer_name();
 		
 	}
     
-	String returVal = "DQ1 status is "+ fileOut.isDq1_passed().toString()+" and the site sender is "+fileOut.getSite_producer_name();  	
-  
+		
+	}
+	
+	
 return returVal;
